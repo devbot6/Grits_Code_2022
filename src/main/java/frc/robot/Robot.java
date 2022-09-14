@@ -4,36 +4,48 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+// import java.io.PushbackInputStream;
+
+// import javax.swing.ButtonGroup;
+// import javax.swing.plaf.basic.BasicToggleButtonUI;
+// import javax.xml.stream.events.StartElement;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
-
-
-
+//import edu.wpi.first.wpilibj2.command.button.Button;
 
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
- * project.
+ * the package after creating this project, you must also update the manifest file in the resource
+ * directory.
  */
 public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
-  private final PWMSparkMax m_elevator = new PWMSparkMax(3);
-  private final PWMSparkMax m_shooter = new PWMSparkMax(2);
   private final PWMSparkMax m_leftDrive = new PWMSparkMax(0);
   private final PWMSparkMax m_rightDrive = new PWMSparkMax(1);
+  private final PWMSparkMax m_shooter = new PWMSparkMax(2);
+  private final PWMSparkMax m_elevator = new PWMSparkMax(3);
+  //private final PWMSparkMax m_rightLift = new PWMSparkMax(4);
+  //private final PWMSparkMax m_leftLift = new PWMSparkMax(4);
+  private final PWMSparkMax m_intake = new PWMSparkMax(5);
+  //private final PWMSparkMax m_climb = new PWMSparkMax(6);
   private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftDrive, m_rightDrive);
-  private RobotContainer m_robotContainer;
+  private final Joystick m_stick = new Joystick(0);
+  private final Joystick m_Stick2 = new Joystick(1);
+  private final Timer m_timer = new Timer();
+   
+  
 
-  PWMSparkMax intake = new PWMSparkMax(5);
-  Joystick mStick = new Joystick(0);
+  boolean toggleOn = false;
+  boolean togglePressed = false;
+
+  
+
+
 
 
   /**
@@ -42,121 +54,132 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
-    
+    // We need to invert one side of the drivetrain so that positive voltages
+    // result in both sides moving forward. Depending on how your robot's
+    // gearbox is constructed, you might have to invert the left side instead.
+    m_rightDrive.setInverted(true);
   }
 
-  /**
-   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
-   * that you want ran during disabled, autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
-   * SmartDashboard integrated updating.
-   */
+  /** This function is run once each time the robot enters autonomous mode. */
   @Override
-  public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
-    CommandScheduler.getInstance().run();
-
-    
-  }
-
-  /** This function is called once each time the robot enters Disabled mode. */
-  @Override
-  public void disabledInit() {}
-
-  @Override
-  public void disabledPeriodic() {}
-
-  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
-  @Override
-  public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    }
+  public void autonomousInit() {//initializes timer for autonmous period
+    m_timer.reset();
+    m_timer.start();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {//code that will run during the autonmous period
+    // Drive for 2 seconds 
+    if (m_timer.get() < 5.0) {
+      m_robotDrive.arcadeDrive(0.0, 0.0);
+      // drive forwards half speed
+    } else {
+      m_robotDrive.stopMotor(); // stop robot
+    }
+  }
 
+  /** This function is called once each time the robot enters teleoperated mode. */
   @Override
   public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
-    }
+    m_timer.reset();
+    m_timer.start();
   }
 
-  /** This function is called periodically during operator control. */
+  /** This function is called periodically during teleoperated mode. */
   @Override
-  public void teleopPeriodic() {
-
+  public void teleopPeriodic(){
     
+   //high shooter
+   if(m_stick.getRawButton(6) == true){
+    
+    m_shooter.set(-.7);
+    //System.out.println("is pressed");
 
-    //intake
-    if (mStick.getRawButton(1) == true){
+   }
+   else{
+     m_shooter.set(0);;
+    // System.out.println("is not pressed");
+   }
 
-        intake.set(-0.4);
-      
+   //low shooter
+   if(m_stick.getRawButton(5) == true){
 
-      }
-      else
-      {
-          intake.set(0);
-      }
+    m_shooter.set(-.5);
+    // System.out.println("is pressed");
+   }
+   else{
+     m_shooter.set(0);
+    //  System.out.println("is not pressed");
+   }
+   
+   //elevator
+   if(m_stick.getRawButton(2) == true){
 
-      //shooter low
-    if (mStick.getRawButton(6) == true){
+    m_elevator.set(.5);
 
-      m_shooter.set(-.50);
-      
-
-    }
-    else{
-      m_shooter.set(0);
-    }
-
-    //elevator
-    if(mStick.getRawButton(2) == true){
-
-      m_elevator.set(.5);
-
-
-    }
-    else{
-      m_elevator.set(0);
-    }
-  }
+   }
+   else{
+     m_elevator.set(0);
+   }
 
   
+  
+      double speed = .7;
+      double xSpeed = m_Stick2.getRawAxis(1) * speed;
+      double ZRotation = m_Stick2.getRawAxis(2) * speed;
+      m_robotDrive.arcadeDrive(-xSpeed, ZRotation);
 
-  @Override
-  public void testInit() {
-    // Cancels all running commands at the start of test mode.
-    CommandScheduler.getInstance().cancelAll();
+
+  
+   //elevator & shooter
+  //  if(m_stick.getRawButton(3)){
+
+  //   m_shooter.set(.7);
+  //   Timer.delay(2);
+  //   m_elevator.set(.4);
+    
+
+  //  }
+  //  else{
+  //    m_shooter.set(0);
+  //    m_elevator.set(0);
+  //  }
+
+
+
+  {
+    if (m_stick.getRawButton(1) == true){
+        m_intake.set(-.5);
+    }
+  else{
+    m_intake.set(.0);
+    }
   }
+}
+
+  // public void updateToggle()
+  // {
+  //     if(m_stick.getRawButton(1)){
+  //         if(!togglePressed){
+  //             toggleOn = !toggleOn;
+  //             togglePressed = true;
+  //         }
+  //     }else{
+  //         togglePressed = false;
+  //     }
+
+  //My attempt at arcade control
+
+
+
+
+  
+  /** This function is called once each time the robot enters test mode. */
+  @Override
+  public void testInit() {}
 
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
-
-  /** This function is called once when the robot is first started up. */
-  @Override
-  public void simulationInit() {}
-
-  /** This function is called periodically whilst in simulation. */
-  @Override
-  public void simulationPeriodic() {}
 }
