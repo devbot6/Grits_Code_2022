@@ -135,18 +135,15 @@ public class Robot extends TimedRobot {
 
   
    //elevator & shooter
-  //  if(m_stick.getRawButton(3)){
+   if(m_stick.getRawButton(3)){
 
-  //   m_shooter.set(.7);
-  //   Timer.delay(2);
-  //   m_elevator.set(.4);
+    m_shooter.set(.7);
+    Timer.delay(2);
+    m_elevator.set(.4);
     
 
-  //  }
-  //  else{
-  //    m_shooter.set(0);
-  //    m_elevator.set(0);
-  //  }
+   }
+   
 
 
 
