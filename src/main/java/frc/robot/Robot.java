@@ -102,14 +102,14 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic(){
     
    //high shooter
-   if(m_stick.getRawButton(6) == true){
+   if(m_stick.getRawButton(4) == true){
     
     m_shooter.set(-.7);
     //System.out.println("is pressed");
 
    }
    else{
-     m_shooter.set(0);;
+     m_shooter.set(0);
     // System.out.println("is not pressed");
    }
 
