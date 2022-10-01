@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+
+import java.sql.Time;
+
 // import java.io.PushbackInputStream;
 
 // import javax.swing.ButtonGroup;
@@ -16,6 +19,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 //import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 //this is the 1st change of grits code using github
 
@@ -39,7 +43,9 @@ public class Robot extends TimedRobot {
   private final Joystick m_stick = new Joystick(0);
   private final Joystick m_Stick2 = new Joystick(1);
   private final Timer m_timer = new Timer();
-   
+
+
+ 
   
 
   boolean toggleOn = false;
@@ -89,6 +95,9 @@ public class Robot extends TimedRobot {
   }
 
   /** This function is called periodically during teleoperated mode. */
+  int currentTime;
+  int startTimer;
+  boolean testBool = false;
   @Override
   public void teleopPeriodic(){
     
@@ -127,23 +136,36 @@ public class Robot extends TimedRobot {
 
   
   
-      double speed = .7;
-      double xSpeed = m_Stick2.getRawAxis(1) * speed;
-      double ZRotation = m_Stick2.getRawAxis(2) * speed;
-      m_robotDrive.arcadeDrive(-xSpeed, ZRotation);
+  double speed = .7;
+  double xSpeed = m_Stick2.getRawAxis(1) * speed;
+  double ZRotation = m_Stick2.getRawAxis(2) * speed;
+  m_robotDrive.arcadeDrive(-xSpeed, ZRotation);
+  currentTime = (int)m_timer.get();
+ 
 
-
-  
+      
    //elevator & shooter
-   if(m_stick.getRawButton(3)){
-
-    m_shooter.set(.7);
-    Timer.delay(2);
-    m_elevator.set(.4);
-    
-
+  if(m_stick.getRawButton(3)){
+      startTimer = currentTime;
+      testBool = true;
+      System.out.println("motor start");
+      // m_elevator.set(.5);
+      System.out.println(currentTime);
+      System.out.println(startTimer);
    }
    
+  if(testBool == true){
+        System.out.println("elevator moving");
+        m_shooter.set(-.6);
+        m_elevator.set(.4);
+      }
+
+  if((currentTime-startTimer)>3 && testBool){
+    System.out.println("elevator stopping");
+    m_elevator.stopMotor();
+    testBool = false;
+  }
+
 
 
 
@@ -157,23 +179,14 @@ public class Robot extends TimedRobot {
   }
 }
 
-  // public void updateToggle()
-  // {
-  //     if(m_stick.getRawButton(1)){
-  //         if(!togglePressed){
-  //             toggleOn = !toggleOn;
-  //             togglePressed = true;
-  //         }
-  //     }else{
-  //         togglePressed = false;
-  //     }
 
-  //My attempt at arcade control
 
 
 
 
   
+
+
   /** This function is called once each time the robot enters test mode. */
   @Override
   public void testInit() {}
