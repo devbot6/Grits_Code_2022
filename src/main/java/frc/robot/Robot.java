@@ -1,8 +1,12 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
+<<<<<<< HEAD
 // Colby 
 
+=======
+// cooper
+>>>>>>> 2a5ac315be9b8e0bcbe3c58a282da0878b7e2586
 package frc.robot;
 
 // import java.io.PushbackInputStream;
