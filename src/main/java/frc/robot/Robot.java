@@ -4,6 +4,8 @@
 // cooper
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+
 // import java.io.PushbackInputStream;
 
 // import javax.swing.ButtonGroup;
@@ -31,20 +33,21 @@ public class Robot extends TimedRobot {
   private final PWMSparkMax m_rightDrive = new PWMSparkMax(1);
   private final PWMSparkMax m_shooter = new PWMSparkMax(2);
   private final PWMSparkMax m_elevator = new PWMSparkMax(3);
+  private final PWMSparkMax m_arm = new PWMSparkMax(4);
   //private final PWMSparkMax m_rightLift = new PWMSparkMax(4);
   //private final PWMSparkMax m_leftLift = new PWMSparkMax(4);
   private final PWMSparkMax m_intake = new PWMSparkMax(5);
   //private final PWMSparkMax m_climb = new PWMSparkMax(6);
+  private final DigitalInput limitSwitchRight = new DigitalInput(5);
+  private final DigitalInput limitSwitchLeft = new DigitalInput(4);
   private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftDrive, m_rightDrive);
   private final Joystick m_stick = new Joystick(0);
   private final Joystick m_Stick2 = new Joystick(1);
   private final Timer m_timer = new Timer();
-   
   
 
   boolean toggleOn = false;
   boolean togglePressed = false;
-  
   
 
 
@@ -92,6 +95,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic(){
     
+   
+
    //high shooter
    if(m_stick.getRawButton(6) == true){
     
@@ -103,7 +108,21 @@ public class Robot extends TimedRobot {
      m_shooter.set(0);;
     // System.out.println("is not pressed");
    }
+   
+  
 
+   if(limitSwitchRight.get() == false){
+    System.out.println("rightswitch");
+   }
+   
+   
+   if(limitSwitchLeft.get() == false){
+    System.out.println("leftswitch");
+   }
+     
+   
+
+  
    //low shooter
    if(m_stick.getRawButton(5) == true){
 
@@ -125,15 +144,30 @@ public class Robot extends TimedRobot {
      m_elevator.set(0);
    }
 
-  
+ 
   
       double speed = .7;
       double xSpeed = m_Stick2.getRawAxis(1) * speed;
       double ZRotation = m_Stick2.getRawAxis(2) * speed;
       m_robotDrive.arcadeDrive(-xSpeed, ZRotation);
 
+   //intake up
+    if(m_Stick2.getRawButton(5) == true){
 
-  
+      m_arm.set(-1.0); 
+    }
+    else{
+      m_arm.set(0);
+    }
+  //intake down
+
+   if(m_Stick2.getRawButton(6) == true){
+
+     m_arm.set(0.5);
+   }
+   else{
+     m_arm.set(0);
+   }
    //elevator & shooter
    if(m_stick.getRawButton(3)){
 
