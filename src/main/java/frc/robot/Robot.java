@@ -152,13 +152,16 @@ public class Robot extends TimedRobot {
       m_robotDrive.arcadeDrive(-xSpeed, ZRotation);
 
    //intake up
+   if(limitSwitchRight.get()){
     if(m_Stick2.getRawButton(5) == true){
 
       m_arm.set(-1.0); 
     }
+
     else{
       m_arm.set(0);
     }
+  }
   //intake down
 
    if(m_Stick2.getRawButton(6) == true){
