@@ -151,7 +151,7 @@ public class Robot extends TimedRobot {
       double ZRotation = m_Stick2.getRawAxis(2) * speed;
       m_robotDrive.arcadeDrive(-xSpeed, ZRotation);
 
-   //intake up
+   //intake up, doesnt work idiots
    if(limitSwitchRight.get()){
     if(m_Stick2.getRawButton(5) == true){
 
