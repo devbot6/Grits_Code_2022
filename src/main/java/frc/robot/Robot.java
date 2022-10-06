@@ -4,6 +4,7 @@
 // cooper
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 // import java.io.PushbackInputStream;
@@ -13,6 +14,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 // import javax.xml.stream.events.StartElement;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -34,6 +37,8 @@ public class Robot extends TimedRobot {
   private final PWMSparkMax m_shooter = new PWMSparkMax(2);
   private final PWMSparkMax m_elevator = new PWMSparkMax(3);
   private final PWMSparkMax m_arm = new PWMSparkMax(4);
+  private final Solenoid p_redlights = new Solenoid(0, PneumaticsModuleType.CTREPCM, 3);
+  private final Compressor c_compressor = new Compressor(PneumaticsModuleType.CTREPCM);
   //private final PWMSparkMax m_rightLift = new PWMSparkMax(4);
   //private final PWMSparkMax m_leftLift = new PWMSparkMax(4);
   private final PWMSparkMax m_intake = new PWMSparkMax(5);
@@ -89,7 +94,20 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     m_timer.reset();
     m_timer.start();
+    p_redlights.set(true);
+     if(c_compressor.getPressureSwitchValue() == false){
+      c_compressor.enableDigital();
+
+     }
+     else{
+       c_compressor.disable();
+     }
+     
+     
   }
+
+
+
 
   /** This function is called periodically during teleoperated mode. */
   @Override
@@ -151,24 +169,25 @@ public class Robot extends TimedRobot {
       double ZRotation = m_Stick2.getRawAxis(2) * speed;
       m_robotDrive.arcadeDrive(-xSpeed, ZRotation);
 
-   //intake up, doesnt work idiots
-   if(limitSwitchRight.get()){
-    if(m_Stick2.getRawButton(5) == true){
-
-      m_arm.set(-1.0); 
+   //intake up
+   if(m_Stick2.getRawButton(5) == true && limitSwitchRight.get()){
+      m_arm.set(-.85); 
     }
 
     else{
       m_arm.set(0);
     }
-  }
+  
   //intake down
 
    if(m_Stick2.getRawButton(6) == true){
 
      m_arm.set(0.5);
+   }else if
+     (m_Stick2.getRawButton(5) == true){
+
    }
-   else{
+   else{ 
      m_arm.set(0);
    }
    //elevator & shooter
