@@ -7,6 +7,8 @@ package frc.robot;
 
 import java.sql.Time;
 
+import javax.xml.stream.events.StartElement;
+
 // import java.io.PushbackInputStream;
 
 // import javax.swing.ButtonGroup;
@@ -43,6 +45,8 @@ public class Robot extends TimedRobot {
   private final Joystick m_stick = new Joystick(0);
   private final Joystick m_Stick2 = new Joystick(1);
   private final Timer m_timer = new Timer();
+  // private final Timer startTimer2 = new Timer();
+  // private final Timer endTimer = new Timer();
 
 
  
@@ -80,7 +84,8 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {//code that will run during the autonmous period
     // Drive for 2 seconds 
     if (m_timer.get() < 5.0) {
-      m_robotDrive.arcadeDrive(0.0, 0.0);
+      m_robotDrive.arcadeDrive(0.5, 0.0);
+      
       // drive forwards half speed
     } else {
       m_robotDrive.stopMotor(); // stop robot
@@ -97,7 +102,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during teleoperated mode. */
   int currentTime;
   int startTimer;
-  boolean testBool = false;
+  boolean testBool;
+  boolean initShoot;
   @Override
   public void teleopPeriodic(){
     
@@ -141,42 +147,86 @@ public class Robot extends TimedRobot {
   double ZRotation = m_Stick2.getRawAxis(2) * speed;
   m_robotDrive.arcadeDrive(-xSpeed, ZRotation);
   currentTime = (int)m_timer.get();
- 
+  
 
       
-   //elevator & shooter
-  if(m_stick.getRawButton(3)){
-      startTimer = currentTime;
-      testBool = true;
-      System.out.println("motor start");
-      // m_elevator.set(.5);
-      System.out.println(currentTime);
-      System.out.println(startTimer);
-   }
-   
-  if(testBool == true){
-        System.out.println("elevator moving");
-        m_shooter.set(-.6);
-        m_elevator.set(.4);
-      }
-
-  if((currentTime-startTimer)>3 && testBool){
-    System.out.println("elevator stopping");
-    m_elevator.stopMotor();
-    testBool = false;
+  //reset time button
+  if(m_stick.getRawButton(6)){
+    m_timer.reset();
+    System.out.println(m_timer.get());
+    System.out.println("timer reset");
   }
 
-
-
-
-  {
+  
+  
     if (m_stick.getRawButton(1) == true){
+      System.out.println("INTAKE");
         m_intake.set(-.5);
     }
   else{
     m_intake.set(.0);
     }
+  
+  
+
+  
+  // //elevator & shooter & shooter spin up
+   if(m_stick.getRawButton(3)){
+     initShoot = true;
+     m_timer.reset();
+     m_timer.start();
+   }
+
+     shoot(initShoot);
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+public void shoot(boolean run){
+
+  if(run == true){
+  testBool = true;
+
+
+
+  if(m_timer.get()>0 && m_timer.get()<.5 && testBool == true){
+    System.out.println(m_timer.get());
+    m_elevator.set(-.4);
+   System.out.println("elevator moves down an inch");
+   
   }
+  else if(m_timer.get()>1 && m_timer.get()<4 && testBool == true){
+    System.out.println(m_timer.get());
+    m_shooter.set(-.6);
+    System.out.println("shooter spins");
+    System.out.println("2 second delya");
+    if(m_timer.get()>2 && m_timer.get()<3 && testBool == true){
+      System.out.println(m_timer.get());
+      m_elevator.set(.6);
+      System.out.println("elevator goes back up for 2 seconds");
+  }
+  }
+  else{
+    System.out.println(m_timer.get());
+    System.out.println("everything stops");
+  }
+}
+
 }
 
 
