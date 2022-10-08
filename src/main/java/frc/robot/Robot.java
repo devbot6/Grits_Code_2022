@@ -40,13 +40,12 @@ public class Robot extends TimedRobot {
   //private final PWMSparkMax m_rightLift = new PWMSparkMax(4);
   //private final PWMSparkMax m_leftLift = new PWMSparkMax(4);
   private final PWMSparkMax m_intake = new PWMSparkMax(5);
-  //private final PWMSparkMax m_climb = new PWMSparkMax(6);
+  private final PWMSparkMax m_climb = new PWMSparkMax(6);
   private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftDrive, m_rightDrive);
   private final Joystick m_stick = new Joystick(0);
   private final Joystick m_Stick2 = new Joystick(1);
   private final Timer m_timer = new Timer();
-  // private final Timer startTimer2 = new Timer();
-  // private final Timer endTimer = new Timer();
+
 
 
  
@@ -54,6 +53,7 @@ public class Robot extends TimedRobot {
 
   boolean toggleOn = false;
   boolean togglePressed = false;
+  boolean initShoot = false;
   
   
 
@@ -77,19 +77,23 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {//initializes timer for autonmous period
     m_timer.reset();
     m_timer.start();
+    initShoot = true;
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {//code that will run during the autonmous period
-    // Drive for 2 seconds 
-    if (m_timer.get() < 5.0) {
-      m_robotDrive.arcadeDrive(0.5, 0.0);
-      
+    // Drive for 2 seconds
+    if (m_timer.get() < .5) {
+      m_robotDrive.arcadeDrive(-0.7, 0.0);
+  }
       // drive forwards half speed
-    } else {
-      m_robotDrive.stopMotor(); // stop robot
+    else {
+      m_robotDrive.stopMotor();
+       // stop robot
+
     }
+    shoot(initShoot, 0, 0.6, -0.7);
   }
 
   /** This function is called once each time the robot enters teleoperated mode. */
@@ -103,32 +107,10 @@ public class Robot extends TimedRobot {
   int currentTime;
   int startTimer;
   boolean testBool;
-  boolean initShoot;
+ 
   @Override
   public void teleopPeriodic(){
-    
-   //high shooter
-   if(m_stick.getRawButton(4) == true){
-    
-    m_shooter.set(-.7);
-    //System.out.println("is pressed");
 
-   }
-   else{
-     m_shooter.set(0);
-    // System.out.println("is not pressed");
-   }
-
-   //low shooter
-   if(m_stick.getRawButton(5) == true){
-
-    m_shooter.set(-.5);
-    // System.out.println("is pressed");
-   }
-   else{
-     m_shooter.set(0);
-    //  System.out.println("is not pressed");
-   }
    
    //elevator
    if(m_stick.getRawButton(2) == true){
@@ -141,7 +123,7 @@ public class Robot extends TimedRobot {
    }
 
   
-  
+  //Arcade Drive
   double speed = .7;
   double xSpeed = m_Stick2.getRawAxis(1) * speed;
   double ZRotation = m_Stick2.getRawAxis(2) * speed;
@@ -150,22 +132,48 @@ public class Robot extends TimedRobot {
   
 
       
-  //reset time button
-  if(m_stick.getRawButton(6)){
-    m_timer.reset();
-    System.out.println(m_timer.get());
-    System.out.println("timer reset");
-  }
+  // //reset time button
+  // if(m_stick.getRawButton(6)){
+  //   m_timer.reset();
+  //   System.out.println(m_timer.get());
+  //   System.out.println("timer reset");
+  // }
 
   
-  
+  //Intake
     if (m_stick.getRawButton(1) == true){
       System.out.println("INTAKE");
-        m_intake.set(-.5);
+        m_intake.set(-.7);
     }
   else{
     m_intake.set(.0);
     }
+
+
+
+  //Traversal up & down
+  
+
+  if(m_stick.getRawButton(5)){
+    System.out.println("climb go up");
+    m_climb.set(.6);
+  }
+  else if(m_stick.getRawButton(6)){
+    System.out.println("climb go down");
+    m_climb.set(-.6);
+  }
+  else{
+    m_climb.set(0);
+  }
+
+  //shooter test
+  if(m_stick.getRawButton(4)){
+    System.out.println("shoot");
+    m_shooter.set(.7);
+  }
+  else{
+    m_shooter.set(0);
+  }
   
   
 
@@ -177,7 +185,7 @@ public class Robot extends TimedRobot {
      m_timer.start();
    }
 
-     shoot(initShoot);
+     shoot(initShoot, -0.4, 0.6, -0.7);
   
 }
 
@@ -197,7 +205,7 @@ public class Robot extends TimedRobot {
 
 
 
-public void shoot(boolean run){
+public void shoot(boolean run, double downElevator, double upElevator, double shooterValue){
 
   if(run == true){
   testBool = true;
@@ -206,24 +214,26 @@ public void shoot(boolean run){
 
   if(m_timer.get()>0 && m_timer.get()<.5 && testBool == true){
     System.out.println(m_timer.get());
-    m_elevator.set(-.4);
+    m_elevator.set(downElevator);
    System.out.println("elevator moves down an inch");
    
   }
-  else if(m_timer.get()>1 && m_timer.get()<4 && testBool == true){
+  else if(m_timer.get()>1 && m_timer.get()<3 && testBool == true){
     System.out.println(m_timer.get());
-    m_shooter.set(-.6);
+    m_shooter.set(shooterValue);
     System.out.println("shooter spins");
     System.out.println("2 second delya");
     if(m_timer.get()>2 && m_timer.get()<3 && testBool == true){
       System.out.println(m_timer.get());
-      m_elevator.set(.6);
+      m_elevator.set(upElevator);
       System.out.println("elevator goes back up for 2 seconds");
   }
   }
   else{
     System.out.println(m_timer.get());
     System.out.println("everything stops");
+    m_shooter.set(0);
+    m_elevator.set(0);
   }
 }
 
