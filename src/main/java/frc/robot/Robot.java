@@ -1,9 +1,16 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
+<<<<<<< HEAD
 // Colby 
 
+=======
+// cooper
+>>>>>>> Cooper
 package frc.robot;
+
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 // import java.io.PushbackInputStream;
 
@@ -12,6 +19,8 @@ package frc.robot;
 // import javax.xml.stream.events.StartElement;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -32,20 +41,23 @@ public class Robot extends TimedRobot {
   private final PWMSparkMax m_rightDrive = new PWMSparkMax(1);
   private final PWMSparkMax m_shooter = new PWMSparkMax(2);
   private final PWMSparkMax m_elevator = new PWMSparkMax(3);
+  private final PWMSparkMax m_arm = new PWMSparkMax(4);
+  private final Solenoid p_redlights = new Solenoid(0, PneumaticsModuleType.CTREPCM, 3);
+  private final Compressor c_compressor = new Compressor(PneumaticsModuleType.CTREPCM);
   //private final PWMSparkMax m_rightLift = new PWMSparkMax(4);
   //private final PWMSparkMax m_leftLift = new PWMSparkMax(4);
   private final PWMSparkMax m_intake = new PWMSparkMax(5);
   //private final PWMSparkMax m_climb = new PWMSparkMax(6);
+  private final DigitalInput limitSwitchRight = new DigitalInput(5);
+  private final DigitalInput limitSwitchLeft = new DigitalInput(4);
   private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftDrive, m_rightDrive);
   private final Joystick m_stick = new Joystick(0);
   private final Joystick m_Stick2 = new Joystick(1);
   private final Timer m_timer = new Timer();
-   
   
 
   boolean toggleOn = false;
   boolean togglePressed = false;
-  
   
 
 
@@ -87,12 +99,27 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     m_timer.reset();
     m_timer.start();
+    p_redlights.set(true);
+     if(c_compressor.getPressureSwitchValue() == false){
+      c_compressor.enableDigital();
+
+     }
+     else{
+       c_compressor.disable();
+     }
+     
+     
   }
+
+
+
 
   /** This function is called periodically during teleoperated mode. */
   @Override
   public void teleopPeriodic(){
     
+   
+
    //high shooter
    if(m_stick.getRawButton(6) == true){
     
@@ -104,7 +131,21 @@ public class Robot extends TimedRobot {
      m_shooter.set(0);;
     // System.out.println("is not pressed");
    }
+   
+  
 
+   if(limitSwitchRight.get() == false){
+    System.out.println("rightswitch");
+   }
+   
+   
+   if(limitSwitchLeft.get() == false){
+    System.out.println("leftswitch");
+   }
+     
+   
+
+  
    //low shooter
    if(m_stick.getRawButton(5) == true){
 
@@ -126,15 +167,34 @@ public class Robot extends TimedRobot {
      m_elevator.set(0);
    }
 
-  
+ 
   
       double speed = .7;
       double xSpeed = m_Stick2.getRawAxis(1) * speed;
       double ZRotation = m_Stick2.getRawAxis(2) * speed;
       m_robotDrive.arcadeDrive(-xSpeed, ZRotation);
 
+   //intake up
+   if(m_Stick2.getRawButton(5) == true && limitSwitchRight.get()){
+      m_arm.set(-.85); 
+    }
 
+    else{
+      m_arm.set(0);
+    }
   
+  //intake down
+
+   if(m_Stick2.getRawButton(6) == true){
+
+     m_arm.set(0.5);
+   }else if
+     (m_Stick2.getRawButton(5) == true){
+
+   }
+   else{ 
+     m_arm.set(0);
+   }
    //elevator & shooter
    if(m_stick.getRawButton(3)){
 
