@@ -1,18 +1,11 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
-<<<<<<< HEAD
-// Colby 
-// cooper
-package frc.robot;
-
-=======
 // cooper
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
->>>>>>> Cooper
 
 // import java.io.PushbackInputStream;
 
@@ -23,8 +16,10 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 //import edu.wpi.first.wpilibj2.command.button.Button;
@@ -44,11 +39,11 @@ public class Robot extends TimedRobot {
   private final PWMSparkMax m_shooter = new PWMSparkMax(2);
   private final PWMSparkMax m_elevator = new PWMSparkMax(3);
   private final PWMSparkMax m_arm = new PWMSparkMax(4);
-<<<<<<< HEAD
-=======
-  private final Solenoid p_redlights = new Solenoid(0, PneumaticsModuleType.CTREPCM, 3);
+  private final DoubleSolenoid p_redlights  = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 3, 2);
+  private final DoubleSolenoid p_arms  = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
+  
+  //private final Solenoid p_bluelights = new Solenoid(0, PneumaticsModuleType.CTREPCM, 3);
   private final Compressor c_compressor = new Compressor(PneumaticsModuleType.CTREPCM);
->>>>>>> Cooper
   //private final PWMSparkMax m_rightLift = new PWMSparkMax(4);
   //private final PWMSparkMax m_leftLift = new PWMSparkMax(4);
   private final PWMSparkMax m_intake = new PWMSparkMax(5);
@@ -80,6 +75,8 @@ public class Robot extends TimedRobot {
     m_rightDrive.setInverted(true);
   }
 
+  
+
   /** This function is run once each time the robot enters autonomous mode. */
   @Override
   public void autonomousInit() {//initializes timer for autonmous period
@@ -98,13 +95,16 @@ public class Robot extends TimedRobot {
       m_robotDrive.stopMotor(); // stop robot
     }
   }
-
   /** This function is called once each time the robot enters teleoperated mode. */
   @Override
   public void teleopInit() {
     m_timer.reset();
     m_timer.start();
-    p_redlights.set(true);
+ 
+
+    
+    
+
      if(c_compressor.getPressureSwitchValue() == false){
       c_compressor.enableDigital();
 
@@ -114,34 +114,43 @@ public class Robot extends TimedRobot {
      }
      
      
-<<<<<<< HEAD
-  }
-=======
->>>>>>> Cooper
   }
 
 
 
-
+   /** kForward value = red light (button ) kReverse value = blue light (button ) */
   /** This function is called periodically during teleoperated mode. */
   @Override
   public void teleopPeriodic(){
-
-
+  if(m_stick.getRawButton(1)){
+    p_redlights.set(Value.kForward);
     
-   
+    //p_bluelights.set(true);
+    // p_bluelights.set(false);
+  }
 
+  
+
+  if(m_stick.getRawButton(2)){
+    p_redlights.set(Value.kReverse);
+  }
+  if(m_stick.getRawButton(6)) {
+    p_arms.set(Value.kForward);
+  } else{
+    p_arms.set(Value.kReverse);
+  }
+  
    //high shooter
-   if(m_stick.getRawButton(6) == true){
+  // if(m_stick.getRawButton(6) == true){
     
-    m_shooter.set(-.7);
+    //m_shooter.set(-.7);
     //System.out.println("is pressed");
 
-   }
-   else{
-     m_shooter.set(0);;
+   //}
+   //else{
+    //  m_shooter.set(0);;
     // System.out.println("is not pressed");
-   }
+   //}
    
   
 
@@ -154,13 +163,9 @@ public class Robot extends TimedRobot {
     System.out.println("leftswitch");
    }
      
-<<<<<<< HEAD
-
-=======
    
 
   
->>>>>>> Cooper
    //low shooter
    if(m_stick.getRawButton(5) == true){
 
@@ -195,13 +200,9 @@ public class Robot extends TimedRobot {
       m_arm.set(-.85); 
     }
 
-<<<<<<< HEAD
-
-=======
     else{
       m_arm.set(0);
     }
->>>>>>> Cooper
   
   //intake down
 
