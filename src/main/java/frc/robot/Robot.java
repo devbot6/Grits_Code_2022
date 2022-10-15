@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot;
 import javax.lang.model.util.ElementScanner6;
+import javax.swing.plaf.TreeUI;
 
 import org.ejml.equation.Variable;
 
@@ -51,13 +52,13 @@ public class Robot extends TimedRobot {
   boolean initShootClose = false;
   boolean initShootLow = false;
   boolean initShootHigh = false;
-  double drivemotor = .7;
+  double drivemotor = .85;
   //double shootermotor = ??
   double elemotor = .5;
-  double intakeupmotor = -.85;
+  double intakeupmotor = -.75;
   double intakemotor = -.7;
-  double climbmotorup = .6;
-  double climbmotordown = -.6; 
+  double climbmotorup = .85;
+  double climbmotordown = -.85; 
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -75,9 +76,9 @@ public class Robot extends TimedRobot {
     m_timer.reset();
     m_timer.start();
     initShootClose = true;
-    initShootLow = true;
-    initShootHigh = true;
-  }
+   // initShootLow = true;
+   // initShootHigh = true;
+   }
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {//code that will run during the autonmous period
@@ -111,6 +112,7 @@ public class Robot extends TimedRobot {
   int startTimer;
   boolean testBool;
   boolean elevatorOff;
+  boolean shooterOff;
   @Override
   public void teleopPeriodic(){
 
@@ -160,6 +162,11 @@ public class Robot extends TimedRobot {
      m_elevator.set(0);
    }
 
+   //turbo mode
+   if(m_Stick2.getRawButton(6)){
+     drivemotor = .95;
+   }
+
 
    //drive
       double xSpeed = m_Stick2.getRawAxis(1) * drivemotor;
@@ -170,13 +177,8 @@ public class Robot extends TimedRobot {
    if(m_stick.getRawButton(5) == true && limitSwitchRight.get()){
       m_arm.set(intakeupmotor); 
     }
-    else{
-      m_arm.set(0);
-    }
-
-    //intake down 
-    if(m_stick.getRawButton(6) == true){
-      m_arm.set(-intakeupmotor); 
+    else if(m_stick.getRawButton(6) == true){
+      m_arm.set(-intakeupmotor);
     }
     else{
       m_arm.set(0);
@@ -206,51 +208,49 @@ public class Robot extends TimedRobot {
   }
 
   // //elevator & shooter spin up High shot
-  if(m_stick.getRawButton(4)){
-    initShootHigh = true;
-    m_timer.reset();
-    m_timer.start();
-  }
-    shoot(initShootHigh, -0.4, 0.6, -0.7);
-
-  //elevator & shooter spin up low shot
+  // if(m_stick.getRawButton(4)){
+  //   initShootHigh = true;
+  //   m_timer.reset();
+  //   m_timer.start();
+  // }
   if(m_stick.getRawButton(2)){
     initShootLow = true;
+    initShootClose = false;
     m_timer.reset();
     m_timer.start();
   }
-  shoot(initShootLow, -.4, .6, -.5);
-
-  // //elevator & shooter spin up close(mid) shot
-   if(m_stick.getRawButton(3)){
-     initShootClose = true;
-     m_timer.reset();
-     m_timer.start();
-   }
-     shoot(initShootClose, -0.4, 0.6, -0.7);
+  else if(m_stick.getRawButton(3)){
+    initShootClose = true;
+    initShootLow = false;
+    m_timer.reset();
+    m_timer.start();
+  }
+    // shoot(initShootHigh, -0.16, 0.7, -0.9);
+    shoot(initShootLow, -.16, .7, -.35);
+    shoot(initShootClose, -0.16, 0.7, -0.81);
+  
 }
 
 public void shoot(boolean run, double downElevator, double upElevator, double shooterValue){
   if(run == true){
-    testBool = true;
-    elevatorOff = true;
-  }
-  if(m_timer.get()>0 && m_timer.get()<.5 && testBool == true){
+    
+   
+    
+  
+  if(m_timer.get()>0 && m_timer.get()<.5){
     m_elevator.set(downElevator);
   }
-  else if(m_timer.get()>1 && m_timer.get()<3 && testBool == true){
+  else if(m_timer.get()>1 && m_timer.get()<4){
     m_shooter.set(shooterValue);
-    if(m_timer.get()>2 && m_timer.get()<3 && testBool == true){
+    if(m_timer.get()>2 && m_timer.get()<4){
       m_elevator.set(upElevator);
   }
   }
-  else if(elevatorOff == true){
-    m_elevator.set(0);
-    elevatorOff = false;
+
+   else if(m_timer.get() > 3){
+     m_shooter.stopMotor();
+   }
   }
-  else{
-    m_shooter.set(0);
-    }
 }
   /** This function is called once each time the robot enters test mode. */
   @Override
