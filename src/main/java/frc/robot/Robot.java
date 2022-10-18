@@ -82,17 +82,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {//code that will run during the autonmous period
-    // Drive for 2 seconds
-    if (m_timer.get() < .5) {
-      m_robotDrive.arcadeDrive(-0.7, 0.0);
-  }
-      // drive forwards half speed
-    else {
-      m_robotDrive.stopMotor();
-       // stop robot
-
-    }
-    shoot(initShootClose, 0, 0.6, -0.7);
+    //oneBallAuto();
+    twoBallAuto();
   }
   /** This function is called once each time the robot enters teleoperated mode. */
   @Override
@@ -173,7 +164,7 @@ public class Robot extends TimedRobot {
       double ZRotation = m_Stick2.getRawAxis(2) * drivemotor;
       m_robotDrive.arcadeDrive(-xSpeed, ZRotation);
 
-   //intake up
+   //intake up/down
    if(m_stick.getRawButton(5) == true && limitSwitchRight.get()){
       m_arm.set(intakeupmotor); 
     }
@@ -251,6 +242,53 @@ public void shoot(boolean run, double downElevator, double upElevator, double sh
      m_shooter.stopMotor();
    }
   }
+}
+
+
+
+//one ball in bot, pick up one behind, human player shoots
+public void oneBallAuto(){
+// Drive for 2 seconds
+if (m_timer.get() < 1.2) {
+  m_robotDrive.arcadeDrive(0.7, 0.0);
+  m_intake.set(-.8);
+}
+else if(m_timer.get()>0.5 && m_timer.get()<1){
+m_arm.set(.55);
+}
+else if(m_timer.get()>2 && m_timer.get()<3.3){
+m_robotDrive.arcadeDrive(0, .6);
+m_elevator.set(.7);
+}
+else if(m_timer.get()>4 && m_timer.get()<8){
+initShootClose = true;
+}
+  
+else {
+  m_elevator.set(0);
+  m_intake.set(0);
+  m_robotDrive.stopMotor();
+   // stop robot
+
+}
+shoot(initShootClose, 0, 0.7, -0.85);
+}
+
+
+//2 balls in robot to start 
+public void twoBallAuto(){
+
+  if (m_timer.get() < 1.25) {
+    m_robotDrive.arcadeDrive(-0.65, 0.0);
+  }  
+  else if(m_timer.get()>1.25 && m_timer.get()<1.5){
+    m_robotDrive.arcadeDrive(.65, 0);
+  }
+  else{
+    m_robotDrive.stopMotor();
+  }
+  shoot(initShootClose, 0, 0.7, -0.85);
+
 }
   /** This function is called once each time the robot enters test mode. */
   @Override
