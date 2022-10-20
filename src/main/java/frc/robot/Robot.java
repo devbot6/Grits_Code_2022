@@ -2,10 +2,6 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot;
-import javax.lang.model.util.ElementScanner6;
-import javax.swing.plaf.TreeUI;
-
-import org.ejml.equation.Variable;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -15,14 +11,15 @@ import edu.wpi.first.wpilibj.DigitalInput;
 // import javax.xml.stream.events.StartElement;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.cameraserver.*;
+import edu.wpi.first.cscore.UsbCamera;
+
 //this is the 1st change of grits code using github
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -53,12 +50,14 @@ public class Robot extends TimedRobot {
   boolean initShootLow = false;
   boolean initShootHigh = false;
   double drivemotor = .85;
-  //double shootermotor = ??
   double elemotor = .5;
   double intakeupmotor = -.75;
   double intakemotor = -.7;
   double climbmotorup = .85;
   double climbmotordown = -.85; 
+  UsbCamera cam1;
+  CameraServer cam2;
+  
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -75,7 +74,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {//initializes timer for autonmous period
     m_timer.reset();
     m_timer.start();
-    initShootClose = true;
+    //initShootClose = false;//one ball auto
+    initShootClose = true;//two ball auto
    // initShootLow = true;
    // initShootHigh = true;
    }
@@ -96,6 +96,8 @@ public class Robot extends TimedRobot {
      else{
        c_compressor.disable();
      }
+
+     cam1 = cam2.startAutomaticCapture();
   }
    /** kForward value = red light (button ) kReverse value = blue light (button ) */
   /** This function is called periodically during teleoperated mode. */
@@ -106,6 +108,10 @@ public class Robot extends TimedRobot {
   boolean shooterOff;
   @Override
   public void teleopPeriodic(){
+
+    
+    //cam1.startAutomaticCapture();
+  
 
   if(m_Stick2.getRawButton(1)){
     p_redlights.set(Value.kForward);
@@ -249,18 +255,21 @@ public void shoot(boolean run, double downElevator, double upElevator, double sh
 //one ball in bot, pick up one behind, human player shoots
 public void oneBallAuto(){
 // Drive for 2 seconds
-if (m_timer.get() < 1.2) {
+if (m_timer.get() < 2) {
   m_robotDrive.arcadeDrive(0.7, 0.0);
   m_intake.set(-.8);
 }
-else if(m_timer.get()>0.5 && m_timer.get()<1){
+else if(m_timer.get()>2 && m_timer.get()<5){
 m_arm.set(.55);
+m_intake.set(-.8);
+
 }
-else if(m_timer.get()>2 && m_timer.get()<3.3){
-m_robotDrive.arcadeDrive(0, .6);
+else if(m_timer.get()>3 && m_timer.get()<4.6){
+m_robotDrive.arcadeDrive(0, .7);
 m_elevator.set(.7);
 }
-else if(m_timer.get()>4 && m_timer.get()<8){
+else if(m_timer.get()>7 && m_timer.get()<10
+){
 initShootClose = true;
 }
   
@@ -278,14 +287,18 @@ shoot(initShootClose, 0, 0.7, -0.85);
 //2 balls in robot to start 
 public void twoBallAuto(){
 
-  if (m_timer.get() < 1.25) {
+  if (m_timer.get() < 1.75) {
     m_robotDrive.arcadeDrive(-0.65, 0.0);
   }  
-  else if(m_timer.get()>1.25 && m_timer.get()<1.5){
+  else if(m_timer.get()>1.75 && m_timer.get()<2){
     m_robotDrive.arcadeDrive(.65, 0);
+  }
+  else if(m_timer.get()>4 && m_timer.get()<5.25){
+    m_robotDrive.arcadeDrive(-0.65, 0);
   }
   else{
     m_robotDrive.stopMotor();
+    m_elevator.stopMotor();
   }
   shoot(initShootClose, 0, 0.7, -0.85);
 
