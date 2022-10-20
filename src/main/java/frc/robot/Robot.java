@@ -1,14 +1,12 @@
+//nivens
+
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
+// cooper
 package frc.robot;
-
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
-// import java.io.PushbackInputStream;
-// import javax.swing.ButtonGroup;
-// import javax.swing.plaf.basic.BasicToggleButtonUI;
-// import javax.xml.stream.events.StartElement;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -18,7 +16,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.cameraserver.*;
-import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.UsbCamera; 
 
 //this is the 1st change of grits code using github
 /**
